@@ -303,13 +303,12 @@ The resulting analysis of missing values in the columsn is as follows
 
 ### Univariate Analysis
 
-
-```python
-uni_fig_rank = px.histogram(matches_df, x='winner_rank', nbins=100,
-                            title='Distribution of Winner Ranks (Log Scale)',
-                            labels={'winner_rank': 'Winner Rank'}, log_y=True)
-uni_fig_rank
-```
+<iframe
+src="assets/freq.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
 
 
 
