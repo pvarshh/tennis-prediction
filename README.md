@@ -323,62 +323,15 @@ This plot shows the frequency of matches played on different surfaces in the dat
 
 ### Bivariate Analysis
 
-
-```python
-dropdown_names = widgets.Dropdown(options=np.array(matches_df['winner_name']))
-def plot_winner_progress(name):
-    player_df = matches_df[(matches_df['winner_name'] == name)]
-    avg = pd.DataFrame(player_df.groupby('year')['winner_rank_points'].mean())
-    avg = avg.reset_index()
-    fig = px.line(
-        avg,
-        x = 'year',
-        y = 'winner_rank_points',
-        title = f'{name}: Ranking points over time',
-        labels = {
-            'year': 'Year',
-            'winner_rank_points': 'Rank points'
-        }
-    )
-    fig.show()
-
-def dropdown_names_handler(change):
-    if change['name'] == 'value' and (change['new'] != change['old']):
-        clear_output()
-        display(dropdown_names)
-        plot_winner_progress(change['new'])
-
-display(dropdown_names)
-plot_winner_progress('Roger Federer')
-dropdown_names.observe(dropdown_names_handler)
-```
+TODO: DROPDOWN
 
 
-    Dropdown(options=('Tommy Haas', 'Juan Balcells', 'Alberto Martin', 'Juan Carlos Ferrero', 'Michael Sell', 'Mic…
-
-
-
-
-
-```python
-# change tmp_df later
-tmp_df = pd.DataFrame()
-tmp_df['rank_diff'] = matches_df['loser_rank'] - matches_df['winner_rank']
-tmp_df['ht_diff'] = matches_df['winner_ht'] - matches_df['loser_ht']
-tmp_df['surface'] = matches_df['surface']
-tmp_df['winner_name'] = matches_df['winner_name']
-tmp_df['loser_name'] = matches_df['loser_name']
-fig_ht_rank_scatter = px.scatter(tmp_df,
-                                 x='ht_diff', y='rank_diff',
-                                 title='Height Difference (Winner - Loser) vs Rank Difference (Loser - Winner) (Sample)',
-                                 labels={'ht_diff': 'Height Difference (cm)', 'rank_diff': 'Rank Difference'},
-                                 hover_data=['winner_name', 'loser_name', 'surface'])
-fig_ht_rank_scatter.add_hline(y=0, opacity=1, line_width=2, line_dash="dash", line_color="red", annotation_text="Rank Upset Line")
-fig_ht_rank_scatter.add_vline(x=0, opacity=1, line_width=2, line_dash="dash", line_color="grey")
-fig_ht_rank_scatter
-```
-
-
+<iframe
+src="assets/height_diff.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
 
 This plot investigates if height difference correlates with winning, especially in the context of rank difference. Points in the bottom-left quadrant represent shorter players winning against higher-ranked opponents (upset). Points in the top-right represent taller players winning against lower-ranked opponents.
 
