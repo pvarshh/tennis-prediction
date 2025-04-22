@@ -338,7 +338,6 @@ This plot investigates if height difference correlates with winning, especially 
 ### Interesting Aggregates
 
 
-<iframe>
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -416,31 +415,9 @@ This plot investigates if height difference correlates with winning, especially 
   </tbody>
 </table>
 </div>
-</iframe>
 
 
 this table compares the average length of matches across different tournament levels (i.e. Grand Slams 'G', Masters 'M', etc.) and surfaces. we can observe that Grand Slam matches on Clay, Grass, and Hard surfaces are typically longer than other typical ATP matches."
-
-
-```python
-unranked_rank = 9999
-matches_df['is_upset'] = (matches_df['winner_rank'] > matches_df['loser_rank']) & \
-                          (matches_df['loser_rank'] != unranked_rank) & \
-                          (matches_df['winner_rank'] != unranked_rank)
-
-upset_pivot = matches_df.pivot_table(
-    values='is_upset',
-    index='tourney_level',
-    columns='surface',
-    aggfunc='mean',
-    fill_value=0
-)
-
-upset_pivot = (upset_pivot * 100).round(1)
-upset_pivot
-```
-
-
 
 
 <div>
