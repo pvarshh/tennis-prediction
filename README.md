@@ -24,74 +24,49 @@ There are 49 columns in our dataset. Many of these are already self-explanatory,
   - eight digits, YYYYMMDD, usually the Monday of the tournament week.
 - match_num
   - a match-specific identifier. Often starting from 1, sometimes counting down from 300, and sometimes arbitrary. 
-- winner_id
-  - the player_id used in this repo for the winner of the match
-- winner_seed
-- winner_entry
+- (winner/loser)_id
+  - the player_id used in this repo for the winner / loser of the match
+- (winner/loser)_seed
+  - the winner / loser's seed in the tournament
+- (winner/loser)_entry
   - 'WC' = wild card, 'Q' = qualifier, 'LL' = lucky loser, 'PR' = protected ranking, 'ITF' = ITF entry, and there are a few others that are occasionally used.
-- winner_name
-- winner_hand
+- (winner/loser)_name
+- (winner/loser)_hand
   - R = right, L = left, U = unknown. For ambidextrous players, this is their serving hand.
-- winner_ht
+- (winner/loser)_ht
   - height in centimeters, where available
-- winner_ioc
+- (winner/lower)_ioc
   - three-character country code
-- winner_age
+- (winner/loser)_age
   - age, in years, as of the tourney_date
-
-- loser_id
-- loser_seed
-- loser_entry
-- loser_name
-- loser_hand
-- loser_ht
-- loser_ioc
-- loser_age
 - score
 - best_of
   - '3' or '5', indicating the the number of sets for this match
-
 - round
 - minutes
   - match length, where available
-
-- w_ace
-  - winner's number of aces
-- w_df
-  - winner's number of doubles faults
-- w_svpt
-  - winner's number of serve points
-- w_1stIn
-  - winner's number of first serves made
-- w_1stWon
-  - winner's number of first-serve points won
-- w_2ndWon
-  - winner's number of second-serve points won
-- w_SvGms
-  - winner's number of serve games
-- w_bpSaved
-  - winner's number of break points saved
-- w_bpFaced
-  - winner's number of break points faced
-
-- l_ace
-- l_df
-- _svpt
-- l_1stIn
-- l_1stWon
-- l_2ndWon
-- l_SvGms
-- l_bpSaved
-- l_bpFaced
-
-- winner_rank
-  - winner's ATP or WTA rank, as of the tourney_date, or the most recent ranking date before the tourney_date
-- winner_rank_points
+- (w/l)_ace
+  - winner / loser's number of aces
+- (w/l)_df
+  - winner / loser's number of doubles faults
+- (w/l)_svpt
+  - winner / loser's number of serve points
+- (w/l)_1stIn
+  - winner / loser's number of first serves made
+- (w/l)_1stWon
+  - winner / loser's number of first-serve points won
+- (w/l)_2ndWon
+  - winner / loser's number of second-serve points won
+- (w/l)_SvGms
+  - winner / loser's number of serve games
+- (w/l)_bpSaved
+  - winner / loser's number of break points saved
+- (w/l)_bpFaced
+  - winner / loser's number of break points faced
+- (winner/loser)_rank
+  - winner / loser's ATP or WTA rank, as of the tourney_date, or the most recent ranking date before the tourney_date
+- (winner/loser)_rank_points
   - number of ranking points, where available
-- loser_rank
-- loser_rank_points
-
-(Courtesy of https://github.com/JeffSackmann/tennis_atp/blob/master/matches_data_dictionary.txt)
 
 Some questions we brained storm are:
 - How much does player rank predict match outcomes? Is the rank gap a significant factor?
