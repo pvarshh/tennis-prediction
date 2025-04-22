@@ -1,8 +1,6 @@
-# Who is the ATP Superstar? (change this lol)
+# Who is the ATP Superstar?
 
 **Jeremy, Pranav**
-
-**[Github](https://github.com/pvarshh/tennis-prediction)**
 
 ## Introduction
 
