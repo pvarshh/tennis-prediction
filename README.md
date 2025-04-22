@@ -305,8 +305,8 @@ The resulting analysis of missing values in the columsn is as follows
 
 <iframe
 src="assets/freq_rank.html"
-width="800"
-height="600"
+width="1000"
+height="1000"
 frameborder="0"
 ></iframe>
 
@@ -314,8 +314,8 @@ This plot shows the frequency of different ranks among match winners. We expect 
 
 <iframe
 src="assets/freq_surface.html"
-width="800"
-height="600"
+width="1000"
+height="1000"
 frameborder="0"
 ></iframe>
 
@@ -328,8 +328,8 @@ TODO: DROPDOWN
 
 <iframe
 src="assets/height_diff.html"
-width="800"
-height="600"
+width="1000"
+height="1000"
 frameborder="0"
 ></iframe>
 
@@ -338,22 +338,7 @@ This plot investigates if height difference correlates with winning, especially 
 ### Interesting Aggregates
 
 
-```python
-duration_pivot = matches_df.pivot_table(
-    values='minutes',
-    index='tourney_level',
-    columns='surface',
-    aggfunc='mean',
-    fill_value=0
-)
-
-duration_pivot = duration_pivot.round(1)
-duration_pivot
-```
-
-
-
-
+<iframe>
 <div>
 <style scoped>
     .dataframe tbody tr th:only-of-type {
@@ -431,7 +416,7 @@ duration_pivot
   </tbody>
 </table>
 </div>
-
+</iframe>
 
 
 this table compares the average length of matches across different tournament levels (i.e. Grand Slams 'G', Masters 'M', etc.) and surfaces. we can observe that Grand Slam matches on Clay, Grass, and Hard surfaces are typically longer than other typical ATP matches."
