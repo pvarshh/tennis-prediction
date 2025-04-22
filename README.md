@@ -239,10 +239,38 @@ The resulting table shows the distribution of missing values in the columns as f
 **Handling Numerical Features**
 
 - Age, Height: For the sake of simplicity and ease, we imputed missing player age / height with the median age / height of all players recorded.
-- Duration: Imputed match duration based on the average duration of matches given the round of the match.
+- Duration: Imputed match duration based on the median duration of matches given the round of the match.
 - In Match Stats: For stats that we typically see during the match, our imputation strategy used median imputation. 
 - Rank / Rank Points: Logically, players who are consistently ranked are less likely to have missing rank data. So, we can impute unranked players with the worst rank.
 
+Because we imputed numerous columns, we select the 3 highest missing count columns to visualize the distributions of the imputed columns before and after imputation. 
+
+<iframe
+src="assets/minutes_imputation.html"
+width="800"
+height="450"
+frameborder="0"
+></iframe>
+
+Overall, the imputation largely preserved the original right-skewed distribution of match durations, but the significantly taller peak around 80-100 minutes in the "After" plot shows that the missing values were filled using a central tendency measure (median).
+
+<iframe
+src="assets/w_ace_imputation.html"
+width="800"
+height="450"
+frameborder="0"
+></iframe>
+
+The distribution of winner aces remains highly right-skewed after imputation; the main visual impact is the increased frequency (taller bars) for lower ace counts, especially around the median number of aces (which was used to fill the missing data points).
+
+<iframe
+src="assets/loser_ht_imputation.html"
+width="800"
+height="450"
+frameborder="0"
+></iframe>
+
+Imputing missing heights significantly increased the data density around the typical player height range (approx. 180-195 cm), with the pronounced central peak in the "After" plot, reflecting missing values being filled by the global median height.
 
 ### Univariate Analysis
 
