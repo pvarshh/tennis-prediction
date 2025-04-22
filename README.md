@@ -1,3 +1,8 @@
+---
+title: Who is the ATP Superstar?
+layout: spec
+---
+
 # Who is the ATP Superstar?
 
 **Jeremy, Pranav**
