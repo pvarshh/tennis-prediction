@@ -325,11 +325,10 @@ This plot shows the frequency of matches played on different surfaces in the dat
 
 TODO: DROPDOWN
 
-
 <iframe
 src="assets/height_diff.html"
-width="1000"
-height="1000"
+width="10000"
+height="10000"
 frameborder="0"
 ></iframe>
 
