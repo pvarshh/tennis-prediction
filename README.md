@@ -284,7 +284,7 @@ The resulting analysis of missing values in the columsn is as follows
 <iframe
 src="assets/freq_rank.html"
 width="800"
-height="600"
+height="400"
 frameborder="0"
 ></iframe>
 
@@ -293,7 +293,7 @@ This plot shows the frequency of different ranks among match winners. We expect 
 <iframe
 src="assets/freq_surface.html"
 width="800"
-height="600"
+height="400"
 frameborder="0"
 ></iframe>
 
@@ -305,8 +305,8 @@ TODO: DROPDOWN
 
 <iframe
 src="assets/height_diff.html"
-width="800"
-height="600"
+width="1200"
+height="400"
 frameborder="0"
 ></iframe>
 
@@ -700,7 +700,7 @@ This matchup_df acts as an intermediate step for our final DataFrame for predict
 Solution: instead of subsetting to one specific pair (of players), use the entire matches_df. we need to restructure it so that each row represents a match with p1/p2 features, alongside the outcome relative to p1 (as professor suraj suggested).
 
 
-### Train-Validation-Test Split
+**Train-Validation-Test Split**
 
 Ee filter the training_df into train_df, val_df, and test_df based on the specified year ranges using the tourney_date. this creates a natural "future" prediction problem where we used historical data to predict matches that occur in the future. we then separate the features and target for each set.
 
@@ -729,7 +729,7 @@ As such, the confusion matrix visually confirms this balanced performance: the n
 <iframe
 src="assets/baseline.html"
 width="800"
-height="600"
+height="400"
 frameborder="0"
 ></iframe>
 
@@ -794,7 +794,7 @@ The predictive model selected is a HistGradientBoostingClassifier, a robust, gra
 <iframe
 src="assets/final.html"
 width="800"
-height="600"
+height="400"
 frameborder="0"
 ></iframe>
 
