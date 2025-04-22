@@ -730,7 +730,13 @@ Ee filter the training_df into train_df, val_df, and test_df based on the specif
 
 ## Baseline Model
 
+We begin our prediction model using simple Logistic Regression, passing in player ranks (p1_rank, p2_rank) and the match surface. this baseline model achieved an overall accuracy of 64% on the testing set. 
 
+The accompanying classification report shows identical precision, recall, and f1-scores of 0.64 for predicting both class 0 (player 1 lost) and class 1 (player 1 won). this uniformity is expected, because given the perfectly balanced nature of the test set (in the preprocessing step, we mirrored p1 winning and losing, creating symmetrical entries for each match outcome). hence, we place high important on accuracy being the main evaluation criteria for our model.
+
+As such, the confusion matrix visually confirms this balanced performance: the number of correctly predicted wins (true positives for class 1, 3871) is very close to the number of correctly predicted losses (true positives for class 0, 3853). similarly, the number of false positives, 2209 is nearly identical to the number of false negatives, 2191.
+
+```
     baseline model classification report (on the testing set):
                    precision    recall  f1-score   support
     
@@ -740,16 +746,10 @@ Ee filter the training_df into train_df, val_df, and test_df based on the specif
         accuracy                           0.64     12124
        macro avg       0.64      0.64      0.64     12124
     weighted avg       0.64      0.64      0.64     12124
-    
-
-We begin our prediction model using simple Logistic Regression, passing in player ranks (p1_rank, p2_rank) and the match surface. this baseline model achieved an overall accuracy of 64% on the testing set. 
-
-The accompanying classification report shows identical precision, recall, and f1-scores of 0.64 for predicting both class 0 (player 1 lost) and class 1 (player 1 won). this uniformity is expected, because given the perfectly balanced nature of the test set (in the preprocessing step, we mirrored p1 winning and losing, creating symmetrical entries for each match outcome). hence, we place high important on accuracy being the main evaluation criteria for our model.
-
-As such, the confusion matrix visually confirms this balanced performance: the number of correctly predicted wins (true positives for class 1, 3871) is very close to the number of correctly predicted losses (true positives for class 0, 3853). similarly, the number of false positives, 2209 is nearly identical to the number of false negatives, 2191.
+```
 
 <iframe
-src="assets/freq_surface.html"
+src="assets/baseline.html"
 width="1000"
 height="1000"
 frameborder="0"
@@ -757,19 +757,6 @@ frameborder="0"
 
 
 ## Final Model
-
-```
-
-    final model classification report (on the testing set):
-                   precision    recall  f1-score   support
-    
-               0       0.92      0.92      0.92      6062
-               1       0.92      0.92      0.92      6062
-    
-        accuracy                           0.92     12124
-       macro avg       0.92      0.92      0.92     12124
-    weighted avg       0.92      0.92      0.92     12124
-```
 
 In this final step, a robust predictive model is developed to forecast the outcome of tennis matches. The procedure involves several key stages, detailed clearly below:
 
@@ -796,3 +783,42 @@ After engineering these features, the data is processed for model training:
 - These preprocessing steps are combined into a cohesive pipeline, ensuring consistency and reproducibility.
 
 **Model Selection and Training**
+
+The predictive model selected is a HistGradientBoostingClassifier, a robust, gradient-boosting algorithm ideal for structured tabular data:
+
+- Hyperparameter Optimization: A randomized hyperparameter search (RandomizedSearchCV) explores multiple parameter combinations to identify optimal model settings:
+    - `learning_rate`: Controls how quickly the model learns.
+    - `max_iter`: Determines the maximum number of iterations for training.
+    - `max_depth`: Limits the complexity of decision trees to prevent overfitting.
+    - `l2_regularization`: Reduces model complexity and overfitting by penalizing complex solutions.
+- Cross-Validation: The search employs 5-fold cross-validation to objectively evaluate and select the best model configuration based on accuracy.
+
+**Model Evaluation**
+
+- Validation Set Performance (2020-2022): The optimized model achieves an accuracy of 91.38%, demonstrating strong predictive capability on recent matches not seen during training.
+- Test Set Performance (2023 and onward): Evaluated on entirely unseen future data, the model achieves an impressive 92.01% accuracy, confirming its robustness and generalization.
+- Classification Report: The detailed classification report shows high precision, recall, and F1-score (~92%) for both outcomes (player 1 wins and player 2 wins), indicating consistent performance.
+- Confusion Matrix: The confusion matrix visually summarizes prediction accuracy, clearly illustrating that the model reliably distinguishes match outcomes.
+
+```
+
+    final model classification report (on the testing set):
+                   precision    recall  f1-score   support
+    
+               0       0.92      0.92      0.92      6062
+               1       0.92      0.92      0.92      6062
+    
+        accuracy                           0.92     12124
+       macro avg       0.92      0.92      0.92     12124
+    weighted avg       0.92      0.92      0.92     12124
+```
+
+<iframe
+src="assets/final.html"
+width="1000"
+height="1000"
+frameborder="0"
+></iframe>
+
+**Conclusion and Practical Implications:**
+This carefully crafted predictive modeling approach provides a powerful tool for accurately forecasting tennis match outcomes. Such a model is valuable for sports analytics, betting strategies, player assessments, and understanding factors driving match results.
