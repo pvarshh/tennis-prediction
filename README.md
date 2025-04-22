@@ -310,8 +310,6 @@ height="600"
 frameborder="0"
 ></iframe>
 
-
-
 This plot shows the frequency of different ranks among match winners. We expect a skew towards lower ranks because better players win more often. The log scale helps better visualize the right tail of higher-ranked winners.
 
 
