@@ -85,12 +85,9 @@ This question delves into the core predictability of tennis matches based on rea
 
 ## Data Cleaning and Exploratory Data Analysis
 
-### Data Cleaning and Imputation
+**Data Cleaning and Imputation**
 
 First, we need to combine our datasets. The dataset we collected from Kaggle split the matches by year, so we can simply concatenate our csv files. We will add two new columns, ``match_id`` and ``year`` to better differentiate matches.
-
-
-
 
 <div>
 <style scoped>
@@ -257,26 +254,18 @@ The resulting analysis of missing values in the columsn is as follows
     loser_rank_points      1468
 
 
-#### Handling Categorical Features
+**Handling Categorical Features**
+- Surface: The surface is consistant across tournaments, so first layer imputation is to full surface with tournament surface. However, for some tornaments, surface wasnt reported at all, so our second layer imputation was to set match surface the most common surface of the year.
+- Hand: For the players who's dominant hand is missing, our imputation strategy was to default the dominant hand right (more common hand bias).
+- Seed: Missing seed for a player means they were not seeded for that tournament, so to maiintain consistency with seed values (1-32), we set default seed to unseeded players as 99.
+- Entry: Missing entry into the tournament for a player means they entered via main draw, so we can impute with the string "MD" which simply means main draw.
 
-**Surface:** The surface is consistant across tournaments, so first layer imputation is to full surface with tournament surface. However, for some tornaments, surface wasnt reported at all, so our second layer imputation was to set match surface the most common surface of the year.
+**Handling Numerical Features**
 
-**Hand:** For the players who's dominant hand is missing, our imputation strategy was to default the dominant hand right (more common hand bias).
-
-**Seed:** Missing seed for a player means they were not seeded for that tournament, so to maiintain consistency with seed values (1-32), we set default seed to unseeded players as 99.
-
-**Entry:** Missing entry into the tournament for a player means they entered via main draw, so we can impute with the string "MD" which simply means main draw.
-
-#### Handling Numerical Features
-
-**Age, Height:** For the sake of simplicity and ease, we imputed missing player age / height with the median age / height of all players recorded.
-
-**Duration:** Imputed match duration based on the average duration of matches given the round of the match.
-
-**In Match Stats:** For stats that we typically see during the match, our imputation strategy used median imputation. 
-
-**Rank / Rank Points:** Logically, players who are consistently ranked are less likely to have missing rank data. So, we can impute unranked players with the worst rank.
-
+- Age, Height: For the sake of simplicity and ease, we imputed missing player age / height with the median age / height of all players recorded.
+- Duration: Imputed match duration based on the average duration of matches given the round of the match.
+- In Match Stats: For stats that we typically see during the match, our imputation strategy used median imputation. 
+- Rank / Rank Points: Logically, players who are consistently ranked are less likely to have missing rank data. So, we can impute unranked players with the worst rank.
 
 
 ### Univariate Analysis
@@ -501,7 +490,7 @@ Information that we would know at "time of prediction" include:
   - career or recent performance metrics on the specific surface of the upcoming match.
   - career or recent performance metrics in similar tournament levels or rounds.
 
-# Data Preprocessing for Matchup Data
+## Data Preprocessing for Matchup Data
 
 This document explains the steps performed by the `create_matchup_df` function, which transforms raw match records into a clean, structured DataFrame suitable for modeling head-to-head player matchups.
 
@@ -542,7 +531,7 @@ Renaming Columns for Consistency
 - Add binary label: `did_player1_win = 0`
 
 Combining and Cleaning Data
--  **Concatenate Subsets**: Merge `p1_wins_df` and `p2_wins_df` into a single DataFrame `matchup_df`.
+- **Concatenate Subsets**: Merge `p1_wins_df` and `p2_wins_df` into a single DataFrame `matchup_df`.
 - **Date Parsing**: Convert the `match_date` column (originally in `YYYYMMDD` integer format) into pandas `datetime` objects.
 - **Type Casting**:
    - Convert age, rank, and IDs to integer types.
@@ -779,7 +768,6 @@ The predictive model selected is a HistGradientBoostingClassifier, a robust, gra
 - Confusion Matrix: The confusion matrix visually summarizes prediction accuracy, clearly illustrating that the model reliably distinguishes match outcomes.
 
 ```
-
     final model classification report (on the testing set):
                    precision    recall  f1-score   support
     
