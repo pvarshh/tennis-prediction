@@ -5,18 +5,8 @@ plugins:
   - jekyll-readme-index
   - jekyll-relative-links
   - jemoji
-markdown: kramdown
 kramdown:
   input: GFM
 readme_index:
   remove_originals: true
   with_frontmatter: true
-favicon: /static/favicon.png
-
-# Primer-specific settings
-defaults:
-  - scope:
-      path: ""
-    values:
-      primer:
-        theme: "dark" # Options: light, dark, auto
