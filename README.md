@@ -294,8 +294,6 @@ This plot shows the frequency of matches played on different surfaces in the dat
 
 ### Bivariate Analysis
 
-TODO: DROPDOWN
-
 <iframe
 src="assets/height_diff.html"
 width="1200"
