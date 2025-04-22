@@ -284,7 +284,7 @@ The resulting analysis of missing values in the columsn is as follows
 <iframe
 src="assets/freq_rank.html"
 width="800"
-height="400"
+height="450"
 frameborder="0"
 ></iframe>
 
@@ -293,7 +293,7 @@ This plot shows the frequency of different ranks among match winners. We expect 
 <iframe
 src="assets/freq_surface.html"
 width="800"
-height="400"
+height="450"
 frameborder="0"
 ></iframe>
 
@@ -729,7 +729,7 @@ As such, the confusion matrix visually confirms this balanced performance: the n
 <iframe
 src="assets/baseline.html"
 width="800"
-height="400"
+height="450"
 frameborder="0"
 ></iframe>
 
@@ -794,7 +794,7 @@ The predictive model selected is a HistGradientBoostingClassifier, a robust, gra
 <iframe
 src="assets/final.html"
 width="800"
-height="400"
+height="450"
 frameborder="0"
 ></iframe>
 
