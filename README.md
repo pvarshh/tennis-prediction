@@ -304,7 +304,7 @@ The resulting analysis of missing values in the columsn is as follows
 ### Univariate Analysis
 
 <iframe
-src="assets/freq.html"
+src="assets/freq_rank.html"
 width="800"
 height="600"
 frameborder="0"
@@ -312,16 +312,12 @@ frameborder="0"
 
 This plot shows the frequency of different ranks among match winners. We expect a skew towards lower ranks because better players win more often. The log scale helps better visualize the right tail of higher-ranked winners.
 
-
-```python
-surface_counts = matches_df['surface'].value_counts()
-uni_fig_surface = px.bar(surface_counts, x=surface_counts.index, y=surface_counts.values,
-                         title='Number of Matches by Surface Type')
-uni_fig_surface.update_layout(xaxis_title="Surface", yaxis_title="Number of Matches")
-uni_fig_surface
-```
-
-
+<iframe
+src="assets/freq_surface.html"
+width="800"
+height="600"
+frameborder="0"
+></iframe>
 
 This plot shows the frequency of matches played on different surfaces in the dataset. Hard courts are typically the most common, followed by Clay, Grass, and Carpet.
 
