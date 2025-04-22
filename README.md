@@ -13,67 +13,44 @@ The Association of Tennis Professionals (ATP) is the main governing body for men
 
 In our dataset, we have 74906 matches spanning across 2000-2024. 
 
-There are 49 columns in our dataset. Many of these are already self-explanatory, but we note clarifications as necessary below:
+There are 49 columns in our dataset. We used 28 of them. Many of these are already self-explanatory, but we note clarifications on the columns we used, as necessary, below:
 
-- tourney_id
+- ``tourney_id``
   - a unique identifier for each tournament, such as 2020-888. The exact formats are borrowed from several different sources, so while the first four characters are always the year, the rest of the ID doesn't follow a predictable structure.
-- tourney_name
-- surface
-- draw_size
-  - number of players in the draw, often rounded up to the nearest power of 2. (For instance, a tournament with 28 players may be shown as 32.)
-- tourney_level
+- ``tourney_name``
+- ``surface``
+- ``tourney_level``
   - For men: 'G' = Grand Slams, 'M' = Masters 1000s, 'A' = other tour-level events, 'C' = Challengers, 'S' = Satellites/ITFs, 'F' = Tour finals and other season-ending events, and 'D' = Davis Cup 
   - For women, there are several additional tourney_level codes, including 'P' = Premier, 'PM' = Premier Mandatory, and 'I' = International. The various levels of ITFs are given by the prize money (in thousands), such as '15' = ITF $15,000. Other codes, such as 'T1' for Tier I (and so on) are used for older WTA tournament designations. 'D' is used for Federation/Fed/Billie Jean King Cup, and also for Wightman Cup and Bonne Bell Cup.
   - Others, eventually for both genders: 'E' = exhibition (events not sanctioned by the tour, though the definitions can be ambiguous), 'J' = juniors, and 'T' = team tennis, which does yet appear anywhere in the dataset but will at some point.
-- tourney_date
+- ``tourney_date``
   - eight digits, YYYYMMDD, usually the Monday of the tournament week.
-- match_num
-  - a match-specific identifier. Often starting from 1, sometimes counting down from 300, and sometimes arbitrary. 
-- (winner/loser)_id
+- ``(winner/loser)_id``
   - the player_id used in this repo for the winner / loser of the match
-- (winner/loser)_seed
+- ``(winner/loser)_seed``
   - the winner / loser's seed in the tournament
-- (winner/loser)_entry
+- ``(winner/loser)_entry``
   - 'WC' = wild card, 'Q' = qualifier, 'LL' = lucky loser, 'PR' = protected ranking, 'ITF' = ITF entry, and there are a few others that are occasionally used.
-- (winner/loser)_name
-- (winner/loser)_hand
+- ``(winner/loser)_name``
+- ``(winner/loser)_hand``
   - R = right, L = left, U = unknown. For ambidextrous players, this is their serving hand.
-- (winner/loser)_ht
+- ``(winner/loser)_ht``
   - height in centimeters, where available
-- (winner/lower)_ioc
+- ``(winner/lower)_ioc``
   - three-character country code
-- (winner/loser)_age
+- ``(winner/loser)_age``
   - age, in years, as of the tourney_date
-- score
-- best_of
+- ``best_of``
   - '3' or '5', indicating the the number of sets for this match
-- round
-- minutes
+- ``round``
+- ``minutes``
   - match length, where available
-- (w/l)_ace
-  - winner / loser's number of aces
-- (w/l)_df
-  - winner / loser's number of doubles faults
-- (w/l)_svpt
-  - winner / loser's number of serve points
-- (w/l)_1stIn
-  - winner / loser's number of first serves made
-- (w/l)_1stWon
-  - winner / loser's number of first-serve points won
-- (w/l)_2ndWon
-  - winner / loser's number of second-serve points won
-- (w/l)_SvGms
-  - winner / loser's number of serve games
-- (w/l)_bpSaved
-  - winner / loser's number of break points saved
-- (w/l)_bpFaced
-  - winner / loser's number of break points faced
-- (winner/loser)_rank
+- ``(winner/loser)_rank``
   - winner / loser's ATP or WTA rank, as of the tourney_date, or the most recent ranking date before the tourney_date
-- (winner/loser)_rank_points
+- ``(winner/loser)_rank_points``
   - number of ranking points, where available
 
-Some questions we brained storm are:
+Some initial questions we brainstormed are:
 - How much does player rank predict match outcomes? Is the rank gap a significant factor?
 - Does the surface type significantly impact match statistics like rally length (minutes)?
 - How strongly do pre-match player statistics, such as rank, age, height, and seeding predict the match winner?
@@ -81,7 +58,7 @@ Some questions we brained storm are:
 
 Ultimately, the question we plan to investigate further in this project is: How strongly do pre-match player statistics, such as rank, age, height, and seeding predict the match winner?
 
-This question delves into the core predictability of tennis matches based on readily available player information **before** the match starts. It explores fundamental factors often discussed by commentators and analysts. 
+This question delves into the core predictability of tennis matches based on readily available player information **before** the match starts. Also, it explores fundamental factors often discussed by commentators and analysts. 
 
 ## Data Cleaning and Exploratory Data Analysis
 
@@ -208,15 +185,14 @@ First, we need to combine our datasets. The dataset we collected from Kaggle spl
 <p>74906 rows × 51 columns</p>
 </div>
 
+For ease of access and analysis later on, we first changed the tournament date to a YYYY-MM-DD datetime format using pandas.
 
-For easier analysis, we changed the tournament date to a Y/M/D format
-
-Next, we columns with missing values that we would later have to fill in using imputation stategies ensuring consistent data across the board for our model to analyze. We found teh following columns that need to be imputed
+Next, we consider columns with missing values; we later fill in the values using imputation stategies ensuring consistent data across the board for our model to analyze. We found the following columns that need to be imputed:
 
     surface, winner_seed, winner_entry, winner_ht, winner_age, loser_seed loser_entry, loser_hand, loser_ht, loser_age, minutes, w_ace', w_df, w_svpt, w_1stIn, w_1stWon, w_2ndWon, w_SvGms, w_bpSaved, w_bpFaced,l_ace, l_df, l_svpt, l_1stIn, l_1stWon, l_2ndWon, l_SvGms, l_bpSaved, l_bpFaced, winner_rank, winner_rank_points, loser_rank, loser_rank_points
 
 
-The resulting analysis of missing values in the columsn is as follows
+The resulting table shows the distribution of missing values in the columns as follows:
 
 
     surface                  53
@@ -257,7 +233,7 @@ The resulting analysis of missing values in the columsn is as follows
 **Handling Categorical Features**
 - Surface: The surface is consistant across tournaments, so first layer imputation is to full surface with tournament surface. However, for some tornaments, surface wasnt reported at all, so our second layer imputation was to set match surface the most common surface of the year.
 - Hand: For the players who's dominant hand is missing, our imputation strategy was to default the dominant hand right (more common hand bias).
-- Seed: Missing seed for a player means they were not seeded for that tournament, so to maiintain consistency with seed values (1-32), we set default seed to unseeded players as 99.
+- Seed: Missing seed for a player means they were not seeded for that tournament, so to maintain consistency with seed values (1-32), we set default seed to unseeded players as 99 (higher number = lower seeding priority).
 - Entry: Missing entry into the tournament for a player means they entered via main draw, so we can impute with the string "MD" which simply means main draw.
 
 **Handling Numerical Features**
@@ -277,7 +253,7 @@ height="450"
 frameborder="0"
 ></iframe>
 
-This plot shows the frequency of different ranks among match winners. We expect a skew towards lower ranks because better players win more often. The log scale helps better visualize the right tail of higher-ranked winners.
+This plot shows the frequency of different ranks among match winners. We expect a skew towards lower ranks because better players win more often. The log scale helps better visualize the right tail of higher-ranked winners. This insight helps us answer our question because it tells us that our model should place greater emphasis on players who are ranked higher since they have more wins than lower ranked players.
 
 <iframe
 src="assets/freq_surface.html"
@@ -286,7 +262,7 @@ height="450"
 frameborder="0"
 ></iframe>
 
-This plot shows the frequency of matches played on different surfaces in the dataset. Hard courts are typically the most common, followed by Clay, Grass, and Carpet.
+This plot shows the frequency of matches played on different surfaces in the dataset. We observe that hard courts are typically the most common, followed by Clay, Grass, and Carpet. We can use this information to get more insight to our question by seeing how the surface (and its count) matter in each tournament level (higher stakes, "winner's court")
 
 ### Bivariate Analysis
 
@@ -299,7 +275,7 @@ height="400"
 frameborder="0"
 ></iframe>
 
-This plot investigates if height difference correlates with winning, especially in the context of rank difference. Points in the bottom-left quadrant represent shorter players winning against higher-ranked opponents (upset). Points in the top-right represent taller players winning against lower-ranked opponents.
+This plot investigates if height difference correlates with winning, especially in the context of rank difference. Points in the bottom-left quadrant represent shorter players winning against higher-ranked opponents (upset). Points in the top-right represent taller players winning against lower-ranked opponents. We see that there is a large cluster near the origin with some notable outliers in terms of their height difference.
 
 ### Interesting Aggregates
 
@@ -466,7 +442,7 @@ This table compares the average length of matches across different tournament le
 
 
 
-This table shows the percentage of matches won by the lower-ranked player ('upsets') across different tournament levels and surfaces. the is_upset variable becomes True only for those rows in matches_df where the player listed as the winner actually had a worse rank (reminder: higher rank value means actual lower rank) than the player listed as the loser. overall, this table provides insight into identifying environments where rankings might be less predictive and upsets are more common.
+This table shows the percentage of matches won by the lower-ranked player ('upsets') across different tournament levels and surfaces. the is_upset variable becomes True only for those rows in matches_df where the player listed as the winner actually had a worse rank (reminder: higher rank value means actual lower rank) than the player listed as the loser. Overall, this table provides insight into identifying environments where rankings might be less predictive and upsets are more common.
 
 ## Framing a Prediction Problem
 
@@ -486,11 +462,8 @@ Information that we would know at "time of prediction" include:
 - match context: tournament name, tournament level, surface, round within the tournament, format ('best_of' 3 or 5 sets).
 - historical performance (calculated before the current match. can be found using feature engineering):
   - head-to-head (H2H) win/loss record between the two specific players prior to this match.
-  - recent player form (e.g., win percentage over the last N matches or M months).
-  - career or recent performance metrics on the specific surface of the upcoming match.
-  - career or recent performance metrics in similar tournament levels or rounds.
 
-## Data Preprocessing for Matchup Data
+### Data Preprocessing for Matchup Data
 
 This document explains the steps performed by the `create_matchup_df` function, which transforms raw match records into a clean, structured DataFrame suitable for modeling head-to-head player matchups.
 
@@ -532,7 +505,6 @@ Renaming Columns for Consistency
 
 Combining and Cleaning Data
 - **Concatenate Subsets**: Merge `p1_wins_df` and `p2_wins_df` into a single DataFrame `matchup_df`.
-- **Date Parsing**: Convert the `match_date` column (originally in `YYYYMMDD` integer format) into pandas `datetime` objects.
 - **Type Casting**:
    - Convert age, rank, and IDs to integer types.
    - Convert rank points, heights, and seeds to numeric (float) types, allowing for missing values.
@@ -682,24 +654,24 @@ For example, the following is between Roger Federer and Fernando Gonzalez.
 
 
 
-This matchup_df acts as an intermediate step for our final DataFrame for prediction. It currently has the following issues that we need to solve:
-1. scarcity in the data: most players have only met each other a handful of times from 2000-2024. training a model on 10-40 data points will likely lead to poor performance and overfitting, even for predicting future matches between those same two players.
-2. lack of generalizability: a model trained only on (for instance) Nadal vs. Federer data will learn patterns specific to their interactions (e.g., the effect of surface, maybe specific psychological edges). it will lack predictive power for a match between any other two players because it hasn't seen data representing their skills, ranks, or interactions.
+This ``matchup_df`` acts as an intermediate step for our final DataFrame for prediction. It currently has the following issues that we need to solve:
+1. Scarcity in the data: most players have only met each other a handful of times from 2000-2024. training a model on 10-40 data points will likely lead to poor performance and overfitting, even for predicting future matches between those same two players.
+2. Lack of generalizability: a model trained only on (for instance) Nadal vs. Federer data will learn patterns specific to their interactions (e.g., the effect of surface, maybe specific psychological edges). it will lack predictive power for a match between any other two players because it hasn't seen data representing their skills, ranks, or interactions.
 
-Solution: instead of subsetting to one specific pair (of players), use the entire matches_df. we need to restructure it so that each row represents a match with p1/p2 features, alongside the outcome relative to p1 (as professor suraj suggested).
+Solution: instead of subsetting to one specific pair (of players), use the entire matches_df. we need to restructure it so that each row represents a match with p1/p2 features, alongside the outcome relative to p1.
 
 
 **Train-Validation-Test Split**
 
-Ee filter the training_df into train_df, val_df, and test_df based on the specified year ranges using the tourney_date. this creates a natural "future" prediction problem where we used historical data to predict matches that occur in the future. we then separate the features and target for each set.
+We filter the ``training_df`` into ``train_df``, ``val_df``, and ``test_df`` based on the specified year ranges using the tourney_date. this creates a natural "future" prediction problem where we used historical data to predict matches that occur in the future. we then separate the features and target for each set.
 
 
 
 ## Baseline Model
 
-We begin our prediction model using simple Logistic Regression, passing in player ranks (p1_rank, p2_rank) and the match surface. this baseline model achieved an overall accuracy of 64% on the testing set. 
+We begin our prediction model using simple Logistic Regression, passing in player ranks (p1_rank, p2_rank) and the match surface. Within our model pipeline, ``p1_rank`` and ``p2_rank ``are treated as quantitative features, while the ``surface`` feature is treated as a nominal feature. We applied a preprocessing step is applied using ``ColumnTransformer``: the two quantitative rank features are scaled using ``StandardScaler`` while the single nominal surface feature is encoded using ``OneHotEncoder`` (with ``drop='first'`` to avoid multicollinearity). This baseline model achieved an overall accuracy of 64% on the testing set. Our model performs better than picking a winner by random chance, but 64% is a low accuracy to do anything actually meaningful. 
 
-The accompanying classification report shows identical precision, recall, and f1-scores of 0.64 for predicting both class 0 (player 1 lost) and class 1 (player 1 won). this uniformity is expected, because given the perfectly balanced nature of the test set (in the preprocessing step, we mirrored p1 winning and losing, creating symmetrical entries for each match outcome). hence, we place high important on accuracy being the main evaluation criteria for our model.
+The accompanying classification report shows identical precision, recall, and f1-scores of 0.64 for predicting both class 0 (player 1 lost) and class 1 (player 1 won). This uniformity is expected, because given the perfectly balanced nature of the test set (in the preprocessing step, we mirrored p1 winning and losing, creating symmetrical entries for each match outcome). Hence, we place high important on **accuracy** being the main evaluation criteria for our model.
 
 As such, the confusion matrix visually confirms this balanced performance: the number of correctly predicted wins (true positives for class 1, 3871) is very close to the number of correctly predicted losses (true positives for class 0, 3853). similarly, the number of false positives, 2209 is nearly identical to the number of false negatives, 2191.
 
@@ -725,11 +697,11 @@ frameborder="0"
 
 ## Final Model
 
-In this final step, a robust predictive model is developed to forecast the outcome of tennis matches. The procedure involves several key stages, detailed clearly below:
+In this final step, a more robust predictive model is developed to forecast the outcome of tennis matches. The procedure involves several key stages, detailed clearly below:
 
 **Feature Engineering**
 
-Before training the model, the data undergoes significant feature engineering, which enhances predictive accuracy:
+Before training the model, the data undergoes significant feature engineering, which did end up enhancing predictive accuracy:
 - **Differences in Player Statistics:**
     - Three critical new features are created:
         - `age_diff`: The difference in age between the two players.
@@ -745,19 +717,19 @@ Before training the model, the data undergoes significant feature engineering, w
 
 After engineering these features, the data is processed for model training:
 
-- Numerical Features (`age_diff`, `rank_diff`, `seed_diff`, `round_num`, `best_of`, `minutes`, `h2h`) are standardized using StandardScaler. This ensures each feature contributes equally, preventing features with larger numeric scales from disproportionately influencing the model.
+- Numerical Features (`age_diff`, `rank_diff`, `seed_diff`, `round_num`, `best_of`, `minutes`, `h2h`) are standardized using StandardScaler. Again, this ensures each feature contributes "equally", preventing features with larger numeric scales from disproportionately influencing the model.
 - Categorical Features (`surface`, `tourney_level`) undergo One-Hot Encoding (`OneHotEncoder`) to convert them into binary features, allowing the model to interpret categorical distinctions effectively.
 - These preprocessing steps are combined into a cohesive pipeline, ensuring consistency and reproducibility.
 
 **Model Selection and Training**
 
-The predictive model selected is a HistGradientBoostingClassifier, a robust, gradient-boosting algorithm ideal for structured tabular data:
+The predictive model selected is a `HistGradientBoostingClassifier`, a robust, gradient-boosting algorithm ideal for structured tabular data:
 
-- Hyperparameter Optimization: A randomized hyperparameter search (RandomizedSearchCV) explores multiple parameter combinations to identify optimal model settings:
-    - `learning_rate`: Controls how quickly the model learns.
-    - `max_iter`: Determines the maximum number of iterations for training.
-    - `max_depth`: Limits the complexity of decision trees to prevent overfitting.
-    - `l2_regularization`: Reduces model complexity and overfitting by penalizing complex solutions.
+- Hyperparameter Optimization: A randomized hyperparameter search (`RandomizedSearchCV`) explores multiple parameter combinations to identify optimal model settings:
+    - `learning_rate`: Controls how quickly the model learns (best: 0.1).
+    - `max_iter`: Determines the maximum number of iterations for training (best: 300).
+    - `max_depth`: Limits the complexity of decision trees to prevent overfitting (best: 3).
+    - `l2_regularization`: Reduces model complexity and overfitting by penalizing complex solutions (best: 0.5).
 - Cross-Validation: The search employs 5-fold cross-validation to objectively evaluate and select the best model configuration based on accuracy.
 
 **Model Evaluation**
