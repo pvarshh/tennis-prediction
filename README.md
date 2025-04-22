@@ -4,7 +4,7 @@
 
 **[Github](https://github.com/pvarshh/tennis-prediction)**
 
-## Step 1: Introduction
+## Introduction
 
 The Association of Tennis Professionals (ATP) is the main governing body for men's professional tennis and the ATP tour is a worldwide tour with a series of tournaments consisting of the best tennis players around the globe. 
 
@@ -105,7 +105,7 @@ Ultimately, the question we plan to investigate further in this project is: How 
 
 This question delves into the core predictability of tennis matches based on readily available player information **before** the match starts. It explores fundamental factors often discussed by commentators and analysts. 
 
-## Step 2: Data Cleaning and Exploratory Data Analysis
+## Data Cleaning and Exploratory Data Analysis
 
 ### Data Cleaning and Imputation
 
@@ -416,7 +416,7 @@ This plot investigates if height difference correlates with winning, especially 
 </div>
 
 
-this table compares the average length of matches across different tournament levels (i.e. Grand Slams 'G', Masters 'M', etc.) and surfaces. we can observe that Grand Slam matches on Clay, Grass, and Hard surfaces are typically longer than other typical ATP matches."
+This table compares the average length of matches across different tournament levels (i.e. Grand Slams 'G', Masters 'M', etc.) and surfaces. we can observe that Grand Slam matches on Clay, Grass, and Hard surfaces are typically longer than other typical ATP matches."
 
 
 <div>
@@ -499,9 +499,9 @@ this table compares the average length of matches across different tournament le
 
 
 
-this table shows the percentage of matches won by the lower-ranked player ('upsets') across different tournament levels and surfaces. the is_upset variable becomes True only for those rows in matches_df where the player listed as the winner actually had a worse rank (reminder: higher rank value means actual lower rank) than the player listed as the loser. overall, this table provides insight into identifying environments where rankings might be less predictive and upsets are more common.
+This table shows the percentage of matches won by the lower-ranked player ('upsets') across different tournament levels and surfaces. the is_upset variable becomes True only for those rows in matches_df where the player listed as the winner actually had a worse rank (reminder: higher rank value means actual lower rank) than the player listed as the loser. overall, this table provides insight into identifying environments where rankings might be less predictive and upsets are more common.
 
-## Step 3: Framing a Prediction Problem
+## Framing a Prediction Problem
 
 As hinted in the introduction, our prediction problem is to predict the outcome of a specific ATP tour tennis match between two designated players ('player 1' and 'player 2'), using only information that would be known before the match commences (to make our model actually useful). This prediction problem is a **Binary Classification** task because the model will predict one of two possible classes: either player 1 wins, or player 1 loses (so player 2 wins).
 
@@ -523,128 +523,72 @@ Information that we would know at "time of prediction" include:
   - career or recent performance metrics on the specific surface of the upcoming match.
   - career or recent performance metrics in similar tournament levels or rounds.
 
-## Step 3.5: Preparing Data for a Baseline Model
+# Data Preprocessing for Matchup Data
 
-### Data Preprocessing
+This document explains the steps performed by the `create_matchup_df` function, which transforms raw match records into a clean, structured DataFrame suitable for modeling head-to-head player matchups.
 
-
-```python
-def create_matchup_df(player1_name, player2_name):
-    extracted_cols = [
-        'tourney_date', 
-        'winner_name', 'winner_age', 'winner_rank', 'winner_seed', 'winner_entry', 
-        'winner_hand', 'winner_ht', 'winner_ioc', 'winner_rank_points', 'winner_id',
-        'loser_name', 'loser_age', 'loser_rank', 'loser_seed', 'loser_entry', 
-        'loser_hand', 'loser_ht', 'loser_ioc', 'loser_rank_points', 'loser_id'
-    ]
-
-    # Ensure we only use columns that exist in matches_df
-    available_cols = [col for col in extracted_cols if col in matches_df.columns]
-    
-    # condition 1: player 1 won against player 2
-    p1_wins_condition = (matches_df['winner_name'] == player1_name) & (matches_df['loser_name'] == player2_name)
-
-    # condition 2: player 2 wins against player 1
-    p2_wins_condition = (matches_df['winner_name'] == player2_name) & (matches_df['loser_name'] == player1_name)
-
-    p1_wins_df = matches_df.loc[p1_wins_condition, available_cols].copy()
-    p2_wins_df = matches_df.loc[p2_wins_condition, available_cols].copy()
-
-    # Create rename dictionaries dynamically based on available columns
-    p1_rename_dict = {
-        'tourney_date': 'match_date',
-        'winner_name': 'p1_name',
-        'winner_age': 'p1_age',
-        'winner_rank': 'p1_rank',
-        'winner_seed': 'p1_seed',
-        'winner_entry': 'p1_entry',
-        'winner_hand': 'p1_hand',
-        'winner_ht': 'p1_ht',
-        'winner_ioc': 'p1_ioc',
-        'winner_rank_points': 'p1_rank_points',
-        'winner_id': 'p1_id',
-        'loser_name': 'p2_name',
-        'loser_age': 'p2_age',
-        'loser_rank': 'p2_rank',
-        'loser_seed': 'p2_seed',
-        'loser_entry': 'p2_entry',
-        'loser_hand': 'p2_hand',
-        'loser_ht': 'p2_ht',
-        'loser_ioc': 'p2_ioc',
-        'loser_rank_points': 'p2_rank_points',
-        'loser_id': 'p2_id'
-    }
-    # Only keep rename pairs for columns that exist
-    p1_rename_dict = {k: v for k, v in p1_rename_dict.items() if k in available_cols}
-    
-    p1_wins_df = p1_wins_df.rename(columns=p1_rename_dict)
-    p1_wins_df['did_player1_win'] = 1
-
-    p2_rename_dict = {
-        'tourney_date': 'match_date',
-        'loser_name': 'p1_name',
-        'loser_age': 'p1_age',
-        'loser_rank': 'p1_rank',
-        'loser_seed': 'p1_seed',
-        'loser_entry': 'p1_entry',
-        'loser_hand': 'p1_hand',
-        'loser_ht': 'p1_ht',
-        'loser_ioc': 'p1_ioc',
-        'loser_rank_points': 'p1_rank_points',
-        'loser_id': 'p1_id',
-        'winner_name': 'p2_name',
-        'winner_age': 'p2_age',
-        'winner_rank': 'p2_rank',
-        'winner_seed': 'p2_seed',
-        'winner_entry': 'p2_entry',
-        'winner_hand': 'p2_hand',
-        'winner_ht': 'p2_ht',
-        'winner_ioc': 'p2_ioc',
-        'winner_rank_points': 'p2_rank_points',
-        'winner_id': 'p2_id'
-    }
-    # Only keep rename pairs for columns that exist
-    p2_rename_dict = {k: v for k, v in p2_rename_dict.items() if k in available_cols}
-    
-    p2_wins_df = p2_wins_df.rename(columns=p2_rename_dict)
-    p2_wins_df['did_player1_win'] = 0
-
-    matchup_df = pd.concat([p1_wins_df, p2_wins_df], ignore_index=True)
-
-    matchup_df['match_date'] = pd.to_datetime(matchup_df['match_date'], format='%Y%m%d')
-    matchup_df['did_player1_win'] = matchup_df['did_player1_win'].astype(int)
-    
-    # Convert numeric columns to appropriate types
-    numeric_cols = {
-        'p1_age': 'int', 'p2_age': 'int',
-        'p1_rank': 'int', 'p2_rank': 'int',
-        'p1_rank_points': 'float', 'p2_rank_points': 'float',
-        'p1_ht': 'float', 'p2_ht': 'float',
-        'p1_seed': 'float', 'p2_seed': 'float', # seeds can be NaN for unseeded players
-        'p1_id': 'int', 'p2_id': 'int', 
-        'p1_ioc': 'str', 'p2_ioc': 'str',
-        'p1_entry': 'str', 'p2_entry': 'str',
-        'p1_hand': 'str', 'p2_hand': 'str',
-        'did_player1_win': 'int'
-    }
-    
-    for col, dtype in numeric_cols.items():
-        if col in matchup_df.columns:
-            matchup_df[col] = pd.to_numeric(matchup_df[col], errors='coerce').astype(dtype)
-    
-    matchup_df = matchup_df.sort_values(by='match_date').reset_index(drop=True)
-    print(f"Found {matchup_df.shape[0]} matches between {player1_name} and {player2_name}.")
-
-    return matchup_df
-```
+**Goal:** Build a DataFrame containing all matches between two specified players, labeling each row with which player won.
+- **Input Arguments:**
+  - `player1_name` (str): Name of the first player.
+  - `player2_name` (str): Name of the second player.
+- **Output:** A pandas DataFrame (`matchup_df`) sorted by match date, with standardized column names and correct data types.
 
 
-```python
-head_to_head_data = create_matchup_df('Roger Federer', 'Fernando Gonzalez')
-head_to_head_data
-```
+Selecting Relevant Columns
+- **Define Expected Columns**: A list of column names (`extracted_cols`) that includes match metadata, winner attributes (age, rank, seed, etc.), and loser attributes.
+- **Filter by Availability**: Create `available_cols` by intersecting `extracted_cols` with the actual columns in the source DataFrame `matches_df`. This ensures compatibility even if some columns are missing.
 
-    Found 13 matches between Roger Federer and Fernando Gonzalez.
+Filtering Matches Between the Two Players
+
+- **Player1 Wins**: Rows where `winner_name == player1_name` and `loser_name == player2_name`.
+- **Player2 Wins**: Rows where `winner_name == player2_name` and `loser_name == player1_name`.
+- Extract these subsets into `p1_wins_df` and `p2_wins_df`, respectively, using only `available_cols`.
+
+Renaming Columns for Consistency
+
+**Objective:** Standardize column names so that columns always refer to “player1” or “player2”, regardless of who actually won in the raw data.
+
+- Player1-Win Subset (`p1_wins_df`)
+- Map raw columns:  
+  - `winner_name` → `p1_name`  
+  - `loser_name`  → `p2_name`  
+  - `winner_age`, `winner_rank`, … → `p1_age`, `p1_rank`, …  
+  - `loser_age`, `loser_rank`, … → `p2_age`, `p2_rank`, …
+- Add binary label: `did_player1_win = 1`
+
+- Player2-Win Subset (`p2_wins_df`)
+- Swap roles in the rename map:
+  - `loser_name` → `p1_name` (because player1 lost)
+  - `winner_name` → `p2_name`
+  - Rename other attributes accordingly.
+- Add binary label: `did_player1_win = 0`
+
+Combining and Cleaning Data
+-  **Concatenate Subsets**: Merge `p1_wins_df` and `p2_wins_df` into a single DataFrame `matchup_df`.
+- **Date Parsing**: Convert the `match_date` column (originally in `YYYYMMDD` integer format) into pandas `datetime` objects.
+- **Type Casting**:
+   - Convert age, rank, and IDs to integer types.
+   - Convert rank points, heights, and seeds to numeric (float) types, allowing for missing values.
+   - Ensure categorical fields (e.g., `p1_hand`, `p2_entry`, `p1_ioc`) are strings.
+   - Enforce the victory indicator `did_player1_win` as integer.
+
+Final Touches
+
+- **Sorting**: Sort the DataFrame by `match_date` in ascending order.
+- **Index Reset**: Reset the DataFrame index to ensure a clean, continuous index after sorting.
+- **Logging**: Print the total number of head-to-head matches found.
+
+Result: The returned DataFrame has one row per match, with columns:
+
+- **`match_date`**: Date of the match (`datetime`)
+- **`p1_name`, `p1_age`, `p1_rank`, etc.**: Attributes for player1
+- **`p2_name`, `p2_age`, `p2_rank`, etc.**: Attributes for player2
+- **`did_player1_win`**: Binary target variable (1 if player1 won, 0 otherwise)
+
+This structured DataFrame can now be used as input for modeling tasks (e.g., predicting head-to-head outcomes) or for exploratory analysis of player performance over time.
+
+
+For example, the following is between Roger Federer and Fernando Gonzalez.
 
 
 
@@ -778,130 +722,14 @@ This matchup_df acts as an intermediate step for our final DataFrame for predict
 Solution: instead of subsetting to one specific pair (of players), use the entire matches_df. we need to restructure it so that each row represents a match with p1/p2 features, alongside the outcome relative to p1 (as professor suraj suggested).
 
 
-```python
-player_cols = ['id', 'seed', 'entry', 'name', 'hand', 'ht', 'ioc', 'age', 'rank', 'rank_points']
-match_context_cols = ['tourney_id', 'tourney_name', 'tourney_level', 'tourney_date', 'surface', 'draw_size', 'match_num', 'best_of', 'round', 'minutes']
-
-# player 1
-df1 = pd.DataFrame()
-for col in player_cols:
-    df1[f'p1_{col}'] = matches_df[f'winner_{col}']
-    df1[f'p2_{col}'] = matches_df[f'loser_{col}']
-for col in match_context_cols:
-    if col in matches_df.columns:
-      df1[col] = matches_df[col]
-df1['outcome'] = 1
-
-# player 2
-df2 = pd.DataFrame()
-for col in player_cols:
-    df2[f'p1_{col}'] = matches_df[f'loser_{col}']
-    df2[f'p2_{col}'] = matches_df[f'winner_{col}']
-for col in match_context_cols:
-     if col in matches_df.columns:
-       df2[col] = matches_df[col]
-df2['outcome'] = 0
-
-model_df = pd.concat([df1, df2], ignore_index=True)
-
-print(f"created model_df that has {model_df.shape[0]} rows and {model_df.shape[1]} columns.")
-```
-
-    created model_df that has 149812 rows and 31 columns.
-
-
 ### Train-Validation-Test Split
 
-we filter the training_df into train_df, val_df, and test_df based on the specified year ranges using the tourney_date. this creates a natural "future" prediction problem where we used historical data to predict matches that occur in the future. we then separate the features and target for each set.
-
-
-```python
-model_df['year'] = model_df['tourney_date'].dt.year
-
-TRAIN_END_YEAR = 2019
-VAL_START_YEAR = 2020
-VAL_END_YEAR = 2022
-TEST_START_YEAR = 2023
-
-train_df = model_df[model_df['year'] <= TRAIN_END_YEAR]
-val_df = model_df[(model_df['year'] >= VAL_START_YEAR) & (model_df['year'] <= VAL_END_YEAR)]
-test_df= model_df[model_df['year'] >= TEST_START_YEAR]
-
-y_train = train_df['outcome']
-y_val = val_df['outcome']
-y_test= test_df['outcome']
-
-X_train_all = train_df.drop(columns=['outcome'])
-X_val_all = val_df.drop(columns=['outcome'])
-X_test_all= test_df.drop(columns=['outcome'])
-```
-
-## Step 4: Baseline Model
-
-
-```python
-baseline_features = ['p1_rank', 'p2_rank', 'surface']
-X_train_baseline = X_train_all[baseline_features]
-X_val_baseline = X_val_all[baseline_features]
-X_test_baseline = X_test_all[baseline_features]
-
-numerical_features_baseline = ['p1_rank', 'p2_rank']
-categorical_features_baseline = ['surface']
-
-preprocessor_base = ColumnTransformer(
-    transformers=[
-        ('num', StandardScaler(), numerical_features_baseline),
-        ('cat', OneHotEncoder(handle_unknown='ignore', drop='first'), categorical_features_baseline)
-    ],
-    remainder='drop'
-)
-
-baseline_pipeline = make_pipeline(
-    preprocessor_base,
-    LogisticRegression()
-)
-
-baseline_pipeline.fit(X_train_baseline, y_train)
-
-y_pred_val_base = baseline_pipeline.predict(X_val_baseline)
-val_accuracy_base = accuracy_score(y_val, y_pred_val_base)
-print(f"   Base Model Accuracy on Validation Set ({VAL_START_YEAR}-{VAL_END_YEAR}): {val_accuracy_base:.4f}")
-
-y_pred_test_base = baseline_pipeline.predict(X_test_baseline)
-test_accuracy_base = accuracy_score(y_test, y_pred_test_base)
-print(f"   Base Model Accuracy on Test Set (>= {TEST_START_YEAR}): {test_accuracy_base:.4f}")
-```
-
-       Base Model Accuracy on Validation Set (2020-2022): 0.6436
-       Base Model Accuracy on Test Set (>= 2023): 0.6371
+Ee filter the training_df into train_df, val_df, and test_df based on the specified year ranges using the tourney_date. this creates a natural "future" prediction problem where we used historical data to predict matches that occur in the future. we then separate the features and target for each set.
 
 
 
-```python
-cm_base = confusion_matrix(y_test, y_pred_test_base)
-print("baseline model classification report (on the testing set):\n", classification_report(y_test, y_pred_test_base))
+## Baseline Model
 
-labels_base = [str(label) for label in baseline_pipeline.classes_]
-text_annotations_base = [[f"{val}" for val in row] for row in cm_base]
-
-fig_base = ff.create_annotated_heatmap(
-    z=cm_base,
-    x=labels_base,
-    y=labels_base,
-    annotation_text=text_annotations_base,
-    colorscale="Blues",
-    showscale=True
-)
-
-fig_base.update_layout(
-    title=f"Baseline Model Confusion Matrix (Test Set, >= {TEST_START_YEAR})",
-    xaxis=dict(title="Predicted Label", side="top"),
-    yaxis=dict(title="True Label"),
-    margin=dict(l=40, r=40, t=60, b=40),
-    font=dict(size=12)
-)
-fig_base.show()
-```
 
     baseline model classification report (on the testing set):
                    precision    recall  f1-score   support
@@ -914,125 +742,22 @@ fig_base.show()
     weighted avg       0.64      0.64      0.64     12124
     
 
+We begin our prediction model using simple Logistic Regression, passing in player ranks (p1_rank, p2_rank) and the match surface. this baseline model achieved an overall accuracy of 64% on the testing set. 
+
+The accompanying classification report shows identical precision, recall, and f1-scores of 0.64 for predicting both class 0 (player 1 lost) and class 1 (player 1 won). this uniformity is expected, because given the perfectly balanced nature of the test set (in the preprocessing step, we mirrored p1 winning and losing, creating symmetrical entries for each match outcome). hence, we place high important on accuracy being the main evaluation criteria for our model.
+
+As such, the confusion matrix visually confirms this balanced performance: the number of correctly predicted wins (true positives for class 1, 3871) is very close to the number of correctly predicted losses (true positives for class 0, 3853). similarly, the number of false positives, 2209 is nearly identical to the number of false negatives, 2191.
+
+<iframe
+src="assets/freq_surface.html"
+width="1000"
+height="1000"
+frameborder="0"
+></iframe>
 
 
+## Final Model
 
-we begin our prediction model using simple Logistic Regression, passing in player ranks (p1_rank, p2_rank) and the match surface. this baseline model achieved an overall accuracy of 64% on the testing set. 
-
-the accompanying classification report shows identical precision, recall, and f1-scores of 0.64 for predicting both class 0 (player 1 lost) and class 1 (player 1 won). this uniformity is expected, because given the perfectly balanced nature of the test set (in the preprocessing step, we mirrored p1 winning and losing, creating symmetrical entries for each match outcome). hence, we place high important on accuracy being the main evaluation criteria for our model.
-
-as such, the confusion matrix visually confirms this balanced performance: the number of correctly predicted wins (true positives for class 1, 3871) is very close to the number of correctly predicted losses (true positives for class 0, 3853). similarly, the number of false positives, 2209 is nearly identical to the number of false negatives, 2191.
-
-## Step 5: Final Model
-
-
-```python
-def feature_engineering(df):
-    df = df.copy()
-
-    df['age_diff'] = df['p1_age'] - df['p2_age']
-    df['rank_diff'] = df['p1_rank'] - df['p2_rank']
-    df['seed_diff'] = df['p1_seed'] - df['p2_seed']
-
-    round_order = ['R128', 'R64', 'R32', 'R16', 'QF', 'SF', 'F']
-    df['round_num'] = df['round'].map({r: i + 1 for i, r in enumerate(round_order)}).fillna(0).astype(int)
-
-    h2h_grouped = df.groupby(['p1_id', 'p2_id'])
-    if not h2h_grouped.groups:
-          df['h2h'] = 0.5
-    else:
-        h2h = h2h_grouped['outcome'].agg(['sum', 'count']).rename(columns={'sum': 'wins', 'count': 'total'})
-        h2h['ratio'] = h2h['wins'] / h2h['total']
-        df = df.merge(h2h['ratio'].reset_index().rename(columns={'ratio': 'h2h'}), on=['p1_id', 'p2_id'], how='left')
-        df['h2h'].fillna(0.5, inplace=True)
-    
-    return df
-
-X_train_eng = feature_engineering(train_df)
-X_val_eng  = feature_engineering(val_df)
-X_test_eng  = feature_engineering(test_df)
-```
-
-
-```python
-numerical_features_final = ['age_diff', 'rank_diff', 'seed_diff', 'round_num', 'best_of', 'minutes', 'h2h']
-categorical_features_final = ['surface', 'tourney_level']
-features_all_final = numerical_features_final + categorical_features_final
-
-X_train_final = X_train_eng[features_all_final]
-X_val_final = X_val_eng[features_all_final]
-X_test_final = X_test_eng[features_all_final]
-
-preprocessor_final = ColumnTransformer(
-    transformers=[
-        ('ohe', OneHotEncoder(handle_unknown='ignore', drop='first'), categorical_features_final),
-        ('std', StandardScaler(), numerical_features_final),
-    ],
-    remainder='drop'
-)
-final_pipeline = make_pipeline(
-    preprocessor_final,
-    HistGradientBoostingClassifier(random_state=42)
-)
-
-param_dist = {
-    'histgradientboostingclassifier__learning_rate':     [0.01, 0.05, 0.1, 0.2],
-    'histgradientboostingclassifier__max_iter':          [100, 200, 300, 400],
-    'histgradientboostingclassifier__max_depth':         [3, 5, 7, 9, None],
-    'histgradientboostingclassifier__l2_regularization': [0.0, 0.1, 0.5, 1.0]
-}
-
-rs = RandomizedSearchCV(
-    final_pipeline,
-    param_distributions=param_dist,
-    n_iter=30,
-    cv=5,
-    scoring='accuracy',
-    n_jobs=-1,
-    random_state=42,
-    verbose=1
-)
-rs.fit(X_train_final, y_train)
-
-val_accuracy_final = rs.score(X_val_final, y_val)
-print(f"   Final Model Accuracy on Validation Set ({VAL_START_YEAR}-{VAL_END_YEAR}): {val_accuracy_final:.4f}")
-
-y_pred_test_final = rs.predict(X_test_final)
-test_accuracy_final = rs.score(X_test_final, y_test)
-print(f"   Final Model Accuracy on Test Set (>= {TEST_START_YEAR}): {test_accuracy_final:.4f}")
-```
-
-    Fitting 5 folds for each of 30 candidates, totalling 150 fits
-       Final Model Accuracy on Validation Set (2020-2022): 0.9138
-       Final Model Accuracy on Test Set (>= 2023): 0.9201
-
-
-
-```python
-print("final model classification report (on the testing set):\n", classification_report(y_test, y_pred_test_final))
-
-cm_final = confusion_matrix(y_test, y_pred_test_final)
-labels_final = [str(label) for label in rs.best_estimator_.classes_]
-
-text_annotations_final = [[f"{val}" for val in row] for row in cm_final]
-
-fig_final = ff.create_annotated_heatmap(
-    z=cm_final,
-    x=labels_final,
-    y=labels_final,
-    annotation_text=text_annotations_final,
-    colorscale="Greens",
-    showscale=True
-)
-
-fig_final.update_layout(
-    title=f"Final Model Confusion Matrix (Test Set, >= {TEST_START_YEAR})",
-    xaxis=dict(title="Predicted Label", side="top"),
-    yaxis=dict(title="True Label"),
-    margin=dict(l=40, r=40, t=60, b=40),
-    font=dict(size=12)
-)
-fig_final.show()
 ```
 
     final model classification report (on the testing set):
@@ -1044,7 +769,30 @@ fig_final.show()
         accuracy                           0.92     12124
        macro avg       0.92      0.92      0.92     12124
     weighted avg       0.92      0.92      0.92     12124
-    
+```
 
+In this final step, a robust predictive model is developed to forecast the outcome of tennis matches. The procedure involves several key stages, detailed clearly below:
 
+**Feature Engineering**
 
+Before training the model, the data undergoes significant feature engineering, which enhances predictive accuracy:
+- **Differences in Player Statistics:**
+    - Three critical new features are created:
+        - `age_diff`: The difference in age between the two players.
+        - `rank_diff`: The difference in player rankings, indicating relative skill level.
+        - `seed_diff`: The difference in tournament seedings, reflecting tournament expectations.
+    - Tournament Round Encoding:
+        - The round of the tournament (`R128`, `R64`, ..., `SF`, `F`) is transformed into a numeric value (`round_num`), with higher rounds assigned greater values, capturing the importance of match context.
+    - Head-to-Head (H2H) Performance:
+        - For each player pair, a historical winning ratio (h2h) is computed based on their past encounters.
+        - If there are no previous matches, a neutral value (0.5) is assigned, reflecting no bias toward either player.
+
+**Preprocessing Pipeline**
+
+After engineering these features, the data is processed for model training:
+
+- Numerical Features (`age_diff`, `rank_diff`, `seed_diff`, `round_num`, `best_of`, `minutes`, `h2h`) are standardized using StandardScaler. This ensures each feature contributes equally, preventing features with larger numeric scales from disproportionately influencing the model.
+- Categorical Features (`surface`, `tourney_level`) undergo One-Hot Encoding (`OneHotEncoder`) to convert them into binary features, allowing the model to interpret categorical distinctions effectively.
+- These preprocessing steps are combined into a cohesive pipeline, ensuring consistency and reproducibility.
+
+**Model Selection and Training**
