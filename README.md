@@ -187,7 +187,7 @@ First, we need to combine our datasets. The dataset we collected from Kaggle spl
 
 For ease of access and analysis later on, we first changed the tournament date to a YYYY-MM-DD datetime format using pandas.
 
-Next, we consider columns with missing values; we later fill in the values using imputation stategies ensuring consistent data across the board for our model to analyze. We found the following columns that need to be imputed:
+Next, we consider columns with missing values; we later fill in the values using imputation stategies ensuring consistent data across the board for our model to analyze. We found the following columns that need to be cleaned (due to missing entries or inconsistency across the category):
 
     surface, winner_seed, winner_entry, winner_ht, winner_age, loser_seed loser_entry, loser_hand, loser_ht, loser_age, minutes, w_ace', w_df, w_svpt, w_1stIn, w_1stWon, w_2ndWon, w_SvGms, w_bpSaved, w_bpFaced,l_ace, l_df, l_svpt, l_1stIn, l_1stWon, l_2ndWon, l_SvGms, l_bpSaved, l_bpFaced, winner_rank, winner_rank_points, loser_rank, loser_rank_points
 
@@ -231,19 +231,19 @@ The resulting table shows the distribution of missing values in the columns as f
 
 
 **Handling Categorical Features**
-- Surface: The surface is consistant across tournaments, so first layer imputation is to full surface with tournament surface. However, for some tornaments, surface wasnt reported at all, so our second layer imputation was to set match surface the most common surface of the year.
-- Hand: For the players who's dominant hand is missing, our imputation strategy was to default the dominant hand right (more common hand bias).
-- Seed: Missing seed for a player means they were not seeded for that tournament, so to maintain consistency with seed values (1-32), we set default seed to unseeded players as 99 (higher number = lower seeding priority).
-- Entry: Missing entry into the tournament for a player means they entered via main draw, so we can impute with the string "MD" which simply means main draw.
+- **Surface**: The surface is consistant across tournaments, so first layer imputation is to full surface with tournament surface. However, for some tornaments, surface wasnt reported at all, so our second layer imputation was to set match surface the most common surface of the year.
+- **Hand**: For the players who's dominant hand is missing, our imputation strategy was to default the dominant hand right (more common hand bias).
+- **Seed**: Missing seed for a player means they were not seeded for that tournament, so to maintain consistency with seed values (1-32), we set default seed to unseeded players as 99 (higher number = lower seeding priority).
+- **Entry**: Missing entry into the tournament for a player means they entered via main draw, so we can impute with the string "MD" which simply means main draw.
 
 **Handling Numerical Features**
 
-- Age, Height: For the sake of simplicity and ease, we imputed missing player age / height with the median age / height of all players recorded.
-- Duration: Imputed match duration based on the median duration of matches given the round of the match.
-- In Match Stats: For stats that we typically see during the match, our imputation strategy used median imputation. 
-- Rank / Rank Points: Logically, players who are consistently ranked are less likely to have missing rank data. So, we can impute unranked players with the worst rank.
+- **Age, Height**: For the sake of simplicity and ease, we imputed missing player age / height with the median age / height of all players recorded.
+- **Duration (minutes)**: Imputed match duration based on the median duration of matches given the round of the match.
+- **In Match Stats**: For stats that we typically see during the match, our imputation strategy used median imputation. 
+- **Rank / Rank Points**: Logically, players who are consistently ranked are less likely to have missing rank data. So, we can impute unranked players with the worst rank.
 
-Because we imputed numerous columns, we select the 3 highest missing count columns to visualize the distributions of the imputed columns before and after imputation. 
+Because we imputed numerous columns, displaying visualizations for all of them would detract our focus. Thus, we selected the 3 highest missing count columns (which we imputed) to visualize the distributions of the imputed columns before and after imputation. 
 
 <iframe
 src="assets/minutes_imputation.html"
@@ -385,7 +385,7 @@ This plot investigates if height difference correlates with winning, especially 
 </div>
 
 
-This table compares the average length of matches across different tournament levels (i.e. Grand Slams 'G', Masters 'M', etc.) and surfaces. we can observe that Grand Slam matches on Clay, Grass, and Hard surfaces are typically longer than other typical ATP matches."
+This table compares the average length of matches across different tournament levels (i.e. Grand Slams 'G', Masters 'M', etc.) and surfaces. Entries with 0 mean that there was no match that was played on that surface at that tournament level. We can observe that Grand Slam matches on Clay, Grass, and Hard surfaces are typically longer than other typical ATP matches. This is to be expected since Grand Slam matches are extremely high stakes and career-defining games. 
 
 
 <div>
@@ -468,7 +468,7 @@ This table compares the average length of matches across different tournament le
 
 
 
-This table shows the percentage of matches won by the lower-ranked player ('upsets') across different tournament levels and surfaces. the is_upset variable becomes True only for those rows in matches_df where the player listed as the winner actually had a worse rank (reminder: higher rank value means actual lower rank) than the player listed as the loser. Overall, this table provides insight into identifying environments where rankings might be less predictive and upsets are more common.
+This table shows the percentage of matches won by the lower-ranked player ('upsets') across different tournament levels and surfaces. The ``is_upset`` variable becomes True only for those rows in matches_df where the player listed as the winner actually had a worse rank (reminder: higher rank value means actual lower rank) than the player listed as the loser. Overall, this table provides insight into identifying environments where rankings might be less predictive and upsets are more common.
 
 ## Framing a Prediction Problem
 
@@ -483,10 +483,10 @@ This variable directly represents the result we set out to predict (win/loss for
 We will primarily use **accuracy** as the main metric to evaluate our model. Recall that accuracy measures the overall proportion of matches correctly predicted, so i.e. both player 1 wins and player 2 wins. It provides a clear baseline measure of model performance. Since our data preparation method (detailed in the next section) involves duplicating matches (once with winner as player 1, once with loser as player 1), the overall target variable distribution in the training set is perfectly balanced (50% wins, 50% losses). There won't be skewedness by class imbalance in the overall dataset.
 
 Information that we would know at "time of prediction" include:
-- player attributes: id, age, hand, height, nationality (IOC).
-- player status: rank, rank points, tournament seed, tournament entry.
-- match context: tournament name, tournament level, surface, round within the tournament, format ('best_of' 3 or 5 sets).
-- historical performance (calculated before the current match. can be found using feature engineering):
+- **Player attributes**: id, age, hand, height, nationality (IOC).
+- **Player status**: rank, rank points, tournament seed, tournament entry.
+- **Match context**: tournament name, tournament level, surface, round within the tournament, format ('best_of' 3 or 5 sets).
+- **Historical performance** (calculated before the current match. can be found using feature engineering):
   - head-to-head (H2H) win/loss record between the two specific players prior to this match.
 
 ### Data Preprocessing for Matchup Data
@@ -541,7 +541,6 @@ Final Touches
 
 - **Sorting**: Sort the DataFrame by `match_date` in ascending order.
 - **Index Reset**: Reset the DataFrame index to ensure a clean, continuous index after sorting.
-- **Logging**: Print the total number of head-to-head matches found.
 
 Result: The returned DataFrame has one row per match, with columns:
 
@@ -730,13 +729,13 @@ In this final step, a more robust predictive model is developed to forecast the 
 Before training the model, the data undergoes significant feature engineering, which did end up enhancing predictive accuracy:
 - **Differences in Player Statistics:**
     - Three critical new features are created:
-        - `age_diff`: The difference in age between the two players.
-        - `rank_diff`: The difference in player rankings, indicating relative skill level.
-        - `seed_diff`: The difference in tournament seedings, reflecting tournament expectations.
+        - `age_diff`: The difference in age between the two players. Instead of using the individual age categories, this difference can indicate disparities in on-court experience versus physical prime or stamina—factors that particularly influence performance.
+        - `rank_diff`: The difference in player rankings, indicating relative skill level. This feature directly quantifies the perceived skill gap based on rank. It helps the model differentiate expected close contests from likely mismatches more effectively than using individual ranks alone.
+        - `seed_diff`: The difference in tournament seedings, reflecting tournament expectations. Seeding reflects the tournament organizers' expectations within the specific event context (considering factors beyond just rank). In other words, this difference provides additional context on expected dominance or competitiveness.
     - Tournament Round Encoding:
-        - The round of the tournament (`R128`, `R64`, ..., `SF`, `F`) is transformed into a numeric value (`round_num`), with higher rounds assigned greater values, capturing the importance of match context.
+        - The round of the tournament (`R128`, `R64`, ..., `SF`, `F`) is transformed into a numeric value (`round_num`), with higher rounds assigned greater values, capturing the importance of match context. Later rounds inherently involve higher stakes, potentially accumulated fatigue, and usually stronger remaining opponents. Thus, encoding this feature captures the changing context and pressure as a tournament progresses.
     - Head-to-Head (H2H) Performance:
-        - For each player pair, a historical winning ratio (h2h) is computed based on their past encounters.
+        - For each player pair, a historical winning ratio (h2h) is computed based on their past encounters. A strong H2H record can often explain deviations from rank-based expectations and is a powerful predictor in established rivalries.
         - If there are no previous matches, a neutral value (0.5) is assigned, reflecting no bias toward either player.
 
 **Preprocessing Pipeline**
@@ -745,25 +744,23 @@ After engineering these features, the data is processed for model training:
 
 - Numerical Features (`age_diff`, `rank_diff`, `seed_diff`, `round_num`, `best_of`, `minutes`, `h2h`) are standardized using StandardScaler. Again, this ensures each feature contributes "equally", preventing features with larger numeric scales from disproportionately influencing the model.
 - Categorical Features (`surface`, `tourney_level`) undergo One-Hot Encoding (`OneHotEncoder`) to convert them into binary features, allowing the model to interpret categorical distinctions effectively.
-- These preprocessing steps are combined into a cohesive pipeline, ensuring consistency and reproducibility.
+- Finally, these preprocessing steps are combined into a pipeline.
 
 **Model Selection and Training**
 
-The predictive model selected is a `HistGradientBoostingClassifier`, a robust, gradient-boosting algorithm ideal for structured tabular data:
+The predictive model selected is a `HistGradientBoostingClassifier`, a robust, gradient-boosting algorithm ideal for structured tabular data. HistGradientBoostingClassifier excels at capturing complex, non-linear relationships and interactions between features. It builds decision trees sequentially—with each new tree attempting to correct the errors made by the previous ones—leading to potentially higher accuracy especially when it is provided with engineered features. 
 
-- Hyperparameter Optimization: A randomized hyperparameter search (`RandomizedSearchCV`) explores multiple parameter combinations to identify optimal model settings:
-    - `learning_rate`: Controls how quickly the model learns (best: 0.1).
-    - `max_iter`: Determines the maximum number of iterations for training (best: 300).
-    - `max_depth`: Limits the complexity of decision trees to prevent overfitting (best: 3).
-    - `l2_regularization`: Reduces model complexity and overfitting by penalizing complex solutions (best: 0.5).
+- Hyperparameter Optimization: A randomized hyperparameter search (`RandomizedSearchCV`) explores multiple parameter combinations to identify optimal model settings. This method efficiently explores a defined distribution of possible hyperparameter values by sampling a fixed number of combinations (n_iter=30), making it faster than an exhaustive grid search:
+    - `learning_rate`: Controls how quickly the model learns (**best**: 0.1).
+    - `max_iter`: Determines the maximum number of iterations for training (**best**: 300).
+    - `max_depth`: Limits the complexity of decision trees to prevent overfitting (**best**: 3).
+    - `l2_regularization`: Reduces model complexity and overfitting by penalizing complex solutions (**best**: 0.5).
 - Cross-Validation: The search employs 5-fold cross-validation to objectively evaluate and select the best model configuration based on accuracy.
 
 **Model Evaluation**
 
 - Validation Set Performance (2020-2022): The optimized model achieves an accuracy of 91.38%, demonstrating strong predictive capability on recent matches not seen during training.
-- Test Set Performance (2023 and onward): Evaluated on entirely unseen future data, the model achieves an impressive 92.01% accuracy, confirming its robustness and generalization.
-- Classification Report: The detailed classification report shows high precision, recall, and F1-score (~92%) for both outcomes (player 1 wins and player 2 wins), indicating consistent performance.
-- Confusion Matrix: The confusion matrix visually summarizes prediction accuracy, clearly illustrating that the model reliably distinguishes match outcomes.
+- Test Set Performance (2023 and onward): Evaluated on entirely unseen future data, the model achieves an impressive 92.01% accuracy, confirming its robustness and generalization. This marked improvement of ~28% underscores the combined value of good feature engineering. We were able to give the model with richer, more comparative information about the matchup. Furthermore, the selection of a more powerful algorithm capable of effectively utilizing those features to capture the complex dynamics inherent in predicting tennis match outcomes was better than a simple Logistic Regression model.
 
 ```
     final model classification report (on the testing set):
